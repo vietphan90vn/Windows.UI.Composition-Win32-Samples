@@ -37,13 +37,13 @@ namespace Composition.WindowsRuntimeHelpers
         [ComVisible(true)]
         interface ICompositorInterop
         {
-            ICompositionSurface CreateCompositionSurfaceForHandle(
+            IntPtr CreateCompositionSurfaceForHandle(
                 IntPtr swapChain);
 
             IntPtr CreateCompositionSurfaceForSwapChain(
                 IntPtr swapChain);
 
-            CompositionGraphicsDevice CreateGraphicsDevice(
+            IntPtr CreateGraphicsDevice(
                 IntPtr renderingDevice);
         }
 
