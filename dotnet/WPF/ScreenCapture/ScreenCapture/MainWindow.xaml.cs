@@ -94,13 +94,7 @@ namespace WPFCaptureSample
             }
             var controlsWidth = (float)(ControlsGrid.ActualWidth * dpiX);
             
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                InitComposition(controlsWidth);
-
-            }));
-
-
+            InitComposition(controlsWidth);
             InitWindowList();
             InitMonitorList();
         }
