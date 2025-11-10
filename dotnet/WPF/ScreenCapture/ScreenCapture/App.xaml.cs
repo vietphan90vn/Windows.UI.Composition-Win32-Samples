@@ -4,7 +4,7 @@ using System.Data;
 using System.Windows;
 using Windows.System;
 
-namespace ScreenCapture
+namespace WPFCaptureSample
 {
     /// <summary>
     /// Interaction logic for App.xaml

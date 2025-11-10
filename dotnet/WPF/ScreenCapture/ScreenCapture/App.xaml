@@ -1,7 +1,7 @@
-﻿<Application x:Class="ScreenCapture.App"
+﻿<Application x:Class="WPFCaptureSample.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ScreenCapture"
+             xmlns:local="clr-namespace:WPFCaptureSample"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

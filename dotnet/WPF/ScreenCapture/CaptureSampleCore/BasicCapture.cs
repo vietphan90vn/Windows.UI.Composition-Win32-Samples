@@ -86,7 +86,7 @@ namespace CaptureSampleCore
             session?.Dispose();
             framePool?.Dispose();
             swapChain?.Dispose();
-            //d3dDevice?.Dispose();
+            d3dDevice?.Dispose();
         }
 
         public void StartCapture()
