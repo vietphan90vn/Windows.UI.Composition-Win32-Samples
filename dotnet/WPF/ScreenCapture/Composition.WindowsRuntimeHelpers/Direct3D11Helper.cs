@@ -25,6 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Windows.Graphics.DirectX.Direct3D11;
+using WinRT;
 
 namespace Composition.WindowsRuntimeHelpers
 {
@@ -91,7 +92,8 @@ namespace Composition.WindowsRuntimeHelpers
 
                 if (hr == 0)
                 {
-                    device = Marshal.GetObjectForIUnknown(pUnknown) as IDirect3DDevice;
+                    // Use WinRT.MarshalInspectable to properly marshal the COM object to WinRT type
+                    device = MarshalInspectable<IDirect3DDevice>.FromAbi(pUnknown);
                     Marshal.Release(pUnknown);
                 }
             }
@@ -111,7 +113,8 @@ namespace Composition.WindowsRuntimeHelpers
 
                 if (hr == 0)
                 {
-                    surface = Marshal.GetObjectForIUnknown(pUnknown) as IDirect3DSurface;
+                    // Use WinRT.MarshalInspectable to properly marshal the COM object to WinRT type    
+                    surface = MarshalInspectable<IDirect3DSurface>.FromAbi(pUnknown);
                     Marshal.Release(pUnknown);
                 }
             }
@@ -121,7 +124,7 @@ namespace Composition.WindowsRuntimeHelpers
 
         public static SharpDX.Direct3D11.Device CreateSharpDXDevice(IDirect3DDevice device)
         {
-            var access = (IDirect3DDxgiInterfaceAccess)device;
+            var access = device.As<IDirect3DDxgiInterfaceAccess>();
             var d3dPointer = access.GetInterface(ID3D11Device);
             var d3dDevice = new SharpDX.Direct3D11.Device(d3dPointer);
             return d3dDevice;
@@ -129,7 +132,7 @@ namespace Composition.WindowsRuntimeHelpers
 
         public static SharpDX.Direct3D11.Texture2D CreateSharpDXTexture2D(IDirect3DSurface surface)
         {
-            var access = (IDirect3DDxgiInterfaceAccess)surface;
+            var access = surface.As<IDirect3DDxgiInterfaceAccess>();
             var d3dPointer = access.GetInterface(ID3D11Texture2D);
             var d3dSurface = new SharpDX.Direct3D11.Texture2D(d3dPointer);
             return d3dSurface;
