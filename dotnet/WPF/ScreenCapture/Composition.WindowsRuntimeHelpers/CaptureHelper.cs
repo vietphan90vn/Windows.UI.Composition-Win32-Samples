@@ -22,17 +22,14 @@
 //  THE SOFTWARE.
 //  ---------------------------------------------------------------------------------
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Graphics.Capture;
+using WinRT;
 
 namespace Composition.WindowsRuntimeHelpers
 {
     public static class CaptureHelper
     {
-        static readonly Guid GraphicsCaptureItemGuid = new Guid("79C3F95B-31F7-4EC2-A464-632EF5D30760");
-
         [ComImport]
         [Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -60,31 +57,45 @@ namespace Composition.WindowsRuntimeHelpers
 
         public static void SetWindow(this GraphicsCapturePicker picker, IntPtr hwnd)
         {
-            var interop = (IInitializeWithWindow)(object)picker;
+            var interop = picker.As<IInitializeWithWindow>();
             interop.Initialize(hwnd);
         }
 
+
+        // The WinRT class ID you ask the factory to create (GraphicsCaptureItem)
+        // This IID is the GUID of the WinRT class you want back from CreateForWindow/Monitor.
+        // See samples that use the same value. 
+        private static readonly Guid GraphicsCaptureItemIid = new("79C3F95B-31F7-4EC2-A464-632EF5D30760");
+
+        /// <summary>
+        /// .NET 8-compatible: create a GraphicsCaptureItem for a window (HWND) without WindowsRuntimeMarshal.
+        /// </summary>
         public static GraphicsCaptureItem CreateItemForWindow(IntPtr hwnd)
         {
-            var factory = WindowsRuntimeMarshal.GetActivationFactory(typeof(GraphicsCaptureItem));
-            var interop = (IGraphicsCaptureItemInterop)factory;
-            var temp = typeof(GraphicsCaptureItem);           
-            var itemPointer = interop.CreateForWindow(hwnd, GraphicsCaptureItemGuid);
-            var item = Marshal.GetObjectForIUnknown(itemPointer) as GraphicsCaptureItem;
-            Marshal.Release(itemPointer);
+            // Get the activation factory for GraphicsCaptureItem and QI to IGraphicsCaptureItemInterop
+            var interop = GraphicsCaptureItem.As<IGraphicsCaptureItemInterop>();
+
+            // Create the item for the specified HWND
+            IntPtr itemPtr = interop.CreateForWindow(hwnd, GraphicsCaptureItemIid);
+
+            // Marshal the returned IInspectable to a projected C# object
+            var item = GraphicsCaptureItem.FromAbi(itemPtr);
+
+            // Release the raw COM pointer (GraphicsCaptureItem now holds a reference)
+            Marshal.Release(itemPtr);
 
             return item;
         }
 
+        /// <summary>
+        /// Optional: create a GraphicsCaptureItem for a monitor (HMONITOR).
+        /// </summary>
         public static GraphicsCaptureItem CreateItemForMonitor(IntPtr hmon)
         {
-            var factory = WindowsRuntimeMarshal.GetActivationFactory(typeof(GraphicsCaptureItem));
-            var interop = (IGraphicsCaptureItemInterop)factory;
-            var temp = typeof(GraphicsCaptureItem);         
-            var itemPointer = interop.CreateForMonitor(hmon, GraphicsCaptureItemGuid);
-            var item = Marshal.GetObjectForIUnknown(itemPointer) as GraphicsCaptureItem;
-            Marshal.Release(itemPointer);
-
+            var interop = GraphicsCaptureItem.As<IGraphicsCaptureItemInterop>();
+            IntPtr itemPtr = interop.CreateForMonitor(hmon, GraphicsCaptureItemIid);
+            var item = GraphicsCaptureItem.FromAbi(itemPtr);
+            Marshal.Release(itemPtr);
             return item;
         }
     }

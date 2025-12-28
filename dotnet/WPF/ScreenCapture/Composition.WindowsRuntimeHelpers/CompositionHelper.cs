@@ -25,6 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Windows.UI.Composition;
+using WinRT;
 
 namespace Composition.WindowsRuntimeHelpers
 {
@@ -36,13 +37,13 @@ namespace Composition.WindowsRuntimeHelpers
         [ComVisible(true)]
         interface ICompositorInterop
         {
-            ICompositionSurface CreateCompositionSurfaceForHandle(
+            IntPtr CreateCompositionSurfaceForHandle(
                 IntPtr swapChain);
 
-            ICompositionSurface CreateCompositionSurfaceForSwapChain(
+            IntPtr CreateCompositionSurfaceForSwapChain(
                 IntPtr swapChain);
 
-            CompositionGraphicsDevice CreateGraphicsDevice(
+            IntPtr CreateGraphicsDevice(
                 IntPtr renderingDevice);
         }
 
@@ -52,21 +53,23 @@ namespace Composition.WindowsRuntimeHelpers
         [ComVisible(true)]
         interface ICompositorDesktopInterop
         {
-            Windows.UI.Composition.Desktop.DesktopWindowTarget CreateDesktopWindowTarget(
+            IntPtr CreateDesktopWindowTarget(
                 IntPtr hwnd,
                 bool isTopmost);
         }
 
         public static CompositionTarget CreateDesktopWindowTarget(this Compositor compositor, IntPtr hwnd, bool isTopmost)
         {
-            var desktopInterop = (ICompositorDesktopInterop)((object)compositor);
-            return desktopInterop.CreateDesktopWindowTarget(hwnd, isTopmost);
+            var desktopInterop = compositor.As<ICompositorDesktopInterop>();
+            var targetPtr = desktopInterop.CreateDesktopWindowTarget(hwnd, isTopmost);
+            return MarshalInterface<Windows.UI.Composition.Desktop.DesktopWindowTarget>.FromAbi(targetPtr);
         }
 
         public static ICompositionSurface CreateCompositionSurfaceForSwapChain(this Compositor compositor, SharpDX.DXGI.SwapChain1 swapChain)
         {
-            var interop = (ICompositorInterop)(object)compositor;
-            return interop.CreateCompositionSurfaceForSwapChain(swapChain.NativePointer);
+            var interop = compositor.As<ICompositorInterop>();
+            var surfacePtr = interop.CreateCompositionSurfaceForSwapChain(swapChain.NativePointer);
+            return MarshalInterface<ICompositionSurface>.FromAbi(surfacePtr);
         }
     }
 }

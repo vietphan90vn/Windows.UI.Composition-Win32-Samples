@@ -1,4 +1,4 @@
-﻿//  ---------------------------------------------------------------------------------
+//  ---------------------------------------------------------------------------------
 //  Copyright (c) Microsoft Corporation.  All rights reserved.
 // 
 //  The MIT License (MIT)
@@ -93,7 +93,7 @@ namespace WPFCaptureSample
                 dpiY = presentationSource.CompositionTarget.TransformToDevice.M22;
             }
             var controlsWidth = (float)(ControlsGrid.ActualWidth * dpiX);
-
+            
             InitComposition(controlsWidth);
             InitWindowList();
             InitMonitorList();
@@ -235,8 +235,8 @@ namespace WPFCaptureSample
         private void StartPrimaryMonitorCapture()
         {
             MonitorInfo monitor = (from m in MonitorEnumerationHelper.GetMonitors()
-                           where m.IsPrimary
-                           select m).First();
+                                   where m.IsPrimary
+                                   select m).First();
             StartHmonCapture(monitor.Hmon);
         }
 
